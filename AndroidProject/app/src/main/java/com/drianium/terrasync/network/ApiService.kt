@@ -14,11 +14,11 @@ interface ApiService {
     @GET("search")
     suspend fun searchPostgresPlace(@Query("query") query: String): Response<List<SearchResult>>
 
-    // Tambahkan endpoint GeoJSON untuk mengambil semua fitur
+    // Endpoint to fetch all features as GeoJsonResponse
     @GET("geojson/{tableName}")
     suspend fun getAllFeatures(@Path("tableName") tableName: String): Response<GeoJsonResponse>
 
-    // Tambahkan endpoint GeoJSON untuk mengambil fitur berdasarkan ID
+    // Endpoint to fetch a feature by ID
     @GET("geojson/{tableName}/{id}")
     suspend fun getFeatureById(
         @Path("tableName") tableName: String,

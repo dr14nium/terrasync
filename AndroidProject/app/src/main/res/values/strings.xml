@@ -16,10 +16,12 @@
     <string name="transparency_low">Transparansi Rendah</string>
     <string name="transparency_high">Transparansi Tinggi</string>
 
-    <!-- Layer Icon Description -->
+    <!-- Layer Icon -->
+    <string name="layer1_name">Batas Administrasi</string>
+    <string name="layer2_name">Bidang Tanah</string>
+    <string name="layer3_name">Pola Ruang</string>
     <string name="layer1_icon">Icon for Layer 1</string>
     <string name="layer2_icon">Icon for Layer 2</string>
     <string name="layer3_icon">Icon for Layer 3</string>
-    <string name="layer4_icon">Icon for Layer 4</string>
 
 </resources>

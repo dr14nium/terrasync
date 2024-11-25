@@ -143,66 +143,57 @@ app.get('/search', async (req, res) => {
 
 // Endpoint 3: getGeoJson
 app.get('/geojson/:tableName/:id?', async (req, res) => {
-  const { tableName, id } = req.params; // Mengambil tableName dan id (opsional)
+  const { tableName, id } = req.params;
 
   try {
-    // Sanitize the table name to prevent SQL injection
     const sanitizedTableName = pgFormat.ident(tableName);
+    let query;
+    let params = [];
 
-    // Kondisi query: jika id ada, query hanya satu feature; jika tidak, query semua feature
-    const idCondition = id ? `WHERE t.id = $1` : ''; // Tambahkan kondisi WHERE jika id disertakan
-
-    // Jika id disertakan, kita ingin hanya 1 feature tanpa FeatureCollection
     if (id) {
-      const querySingleFeature = `
-        SELECT jsonb_build_object(
-          'type', 'Feature',
-          'geometry', ST_AsGeoJSON(ST_Transform(t.geom, 4326), 15)::jsonb, -- Konversi ke EPSG:4326
-          'properties', to_jsonb(t) - 'geom' -- Menghapus kolom geom dari properti
-        ) AS geojson
-        FROM public.${sanitizedTableName} t
-        WHERE t.id = $1; -- Mengambil satu fitur berdasarkan ID
-      `;
-
-      // Eksekusi query dengan parameter id
-      const result = await pool.query(querySingleFeature, [id]);
-
-      if (result.rows.length === 0) {
-        return res.status(404).send(); // Not Found jika tidak ada data yang ditemukan berdasarkan id
-      }
-
-      // Kembalikan satu Feature tunggal
-      res.setHeader('Content-Type', 'application/json');
-      res.send(result.rows[0].geojson);
-    } else {
-      // Jika tidak ada id, kita ingin mengambil semua feature sebagai FeatureCollection
-      const queryAllFeatures = `
+      // Query untuk 1 fitur
+      query = `
         SELECT jsonb_build_object(
           'type', 'FeatureCollection',
           'features', jsonb_agg(
             jsonb_build_object(
               'type', 'Feature',
-              'geometry', ST_AsGeoJSON(ST_Transform(t.geom, 4326), 15)::jsonb, -- Konversi ke EPSG:4326
-              'properties', to_jsonb(t) - 'geom' -- Menghapus kolom geom dari properti
+              'geometry', ST_AsGeoJSON(ST_Transform(t.geom, 4326), 15)::jsonb,
+              'properties', to_jsonb(t) - 'geom'
+            )
+          )
+        ) AS geojson
+        FROM public.${sanitizedTableName} t
+        WHERE t.id = $1;
+      `;
+      params.push(id);
+    } else {
+      // Query untuk semua fitur
+      query = `
+        SELECT jsonb_build_object(
+          'type', 'FeatureCollection',
+          'features', jsonb_agg(
+            jsonb_build_object(
+              'type', 'Feature',
+              'geometry', ST_AsGeoJSON(ST_Transform(t.geom, 4326), 15)::jsonb,
+              'properties', to_jsonb(t) - 'geom'
             )
           )
         ) AS geojson
         FROM public.${sanitizedTableName} t;
       `;
-
-      // Eksekusi query tanpa parameter (semua fitur)
-      const result = await pool.query(queryAllFeatures);
-
-      if (result.rows.length === 0 || !result.rows[0].geojson.features) {
-        return res.status(204).send(); // No Content jika tidak ada data ditemukan
-      }
-
-      // Kembalikan FeatureCollection
-      res.setHeader('Content-Type', 'application/json');
-      res.send(result.rows[0].geojson);
     }
+
+    const result = await pool.query(query, params);
+
+    if (!result.rows.length || !result.rows[0].geojson.features) {
+      return res.status(204).send(); // No Content jika tidak ada data
+    }
+
+    res.setHeader('Content-Type', 'application/json');
+    res.send(result.rows[0].geojson);
   } catch (error) {
-    console.error('Error fetching data:', error.stack);
+    console.error('Error fetching GeoJSON data:', error.stack);
     res.status(500).json({ error: 'Internal Server Error', details: error.message });
   }
 });

@@ -127,7 +127,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Layer 1"
+                    android:text="@string/layer1_name"
                     android:textSize="@dimen/text_size_small"
                     android:gravity="center"
                     android:paddingTop="@dimen/padding_extra_small" />
@@ -176,7 +176,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Layer 2"
+                    android:text="@string/layer2_name"
                     android:textSize="@dimen/text_size_small"
                     android:gravity="center"
                     android:paddingTop="@dimen/padding_extra_small" />
@@ -225,7 +225,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Layer 3"
+                    android:text="@string/layer3_name"
                     android:textSize="@dimen/text_size_small"
                     android:gravity="center"
                     android:paddingTop="@dimen/padding_extra_small" />

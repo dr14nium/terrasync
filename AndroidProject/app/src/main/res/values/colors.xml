@@ -5,7 +5,7 @@
 
     <!-- Primary Colors -->
     <color name="primary">#1755FE</color>
-    <color name="primary_light">#BACCFF</color>
+    <color name="primary_light">#7399fe</color>
 
     <!-- Button States -->
     <color name="btn_active_color">#1755FE</color>
@@ -20,4 +20,9 @@
     <!-- Others Colors -->
     <color name="black_overlay">#66000000</color>
     <color name="transparent_fill">#80FFFFFF</color>
+
+    <!-- Dots Colors for Bottomsheet Information -->
+    <color name="active_dot">#FF5733</color>
+    <color name="inactive_dot">#CCCCCC</color>
+
 </resources>
