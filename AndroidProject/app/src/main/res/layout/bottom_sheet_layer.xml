@@ -1,6 +1,240 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent">
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="@dimen/padding_medium">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <!-- Row for Title and Transparency Slider -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="@dimen/margin_small">
+
+        <!-- Title -->
+        <TextView
+            android:id="@+id/bottom_sheet_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/bottom_sheet_title"
+            android:textColor="@color/primary"
+            android:textSize="@dimen/text_size_large"
+            android:layout_marginStart="@dimen/margin_small"
+            android:layout_marginEnd="@dimen/margin_medium"
+            android:layout_marginTop="@dimen/margin_small"
+            android:textStyle="bold" />
+
+        <!-- Transparency Slider -->
+        <LinearLayout
+            android:id="@+id/transparency_control_group"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_margin="@dimen/margin_small"
+            android:visibility="gone">
+
+            <!-- Ikon Transparency Low -->
+            <ImageView
+                android:id="@+id/icon_transparency_low"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_seekbar_start"
+                android:contentDescription="@string/transparency_low"
+                android:layout_marginEnd="@dimen/margin_small" />
+
+            <!-- Transparency Slider -->
+            <SeekBar
+                android:id="@+id/transparency_slider"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:max="100"
+                android:progress="100"
+                android:padding="@dimen/padding_small"
+                android:thumbTint="@color/primary"
+                android:progressTint="@color/primary"
+                android:progressBackgroundTint="@color/black_overlay" />
+
+
+            <!-- Ikon Transparency High -->
+            <ImageView
+                android:id="@+id/icon_transparency_high"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_seekbar_end"
+                android:contentDescription="@string/transparency_high"
+                android:layout_marginStart="@dimen/margin_small" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- Scrollable Button Container -->
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <!-- Button 1 -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="@dimen/padding_small"
+                android:layout_margin="@dimen/margin_small">
+
+                <!-- Outline and Icon -->
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <!-- Outline untuk Status Aktif/Nonaktif -->
+                    <View
+                        android:id="@+id/outline_layer1"
+                        android:layout_width="@dimen/button_size"
+                        android:layout_height="@dimen/button_size"
+                        android:background="@drawable/outline_layer_selector" />
+
+                    <!-- Outline untuk Layer yang Diklik -->
+                    <View
+                        android:id="@+id/active_outline_layer1"
+                        android:layout_width="@dimen/button_size"
+                        android:layout_height="@dimen/button_size"
+                        android:background="@drawable/outline_primary"
+                        android:visibility="gone" />
+
+                    <!-- Icon -->
+                    <ImageView
+                        android:id="@+id/icon_layer1"
+                        android:layout_width="@dimen/button_size"
+                        android:layout_height="@dimen/button_size"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_map"
+                        android:contentDescription="@string/layer1_icon" />
+                </FrameLayout>
+
+
+                <!-- Text -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Layer 1"
+                    android:textSize="@dimen/text_size_small"
+                    android:gravity="center"
+                    android:paddingTop="@dimen/padding_extra_small" />
+            </LinearLayout>
+
+            <!-- Button 2 -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="@dimen/padding_small"
+                android:layout_margin="@dimen/margin_small">
+
+                <!-- Outline and Icon -->
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <!-- Outline untuk Status Aktif/Nonaktif -->
+                    <View
+                        android:id="@+id/outline_layer2"
+                        android:layout_width="@dimen/button_size"
+                        android:layout_height="@dimen/button_size"
+                        android:background="@drawable/outline_layer_selector" />
+
+                    <!-- Outline untuk Layer yang Diklik -->
+                    <View
+                        android:id="@+id/active_outline_layer2"
+                        android:layout_width="@dimen/button_size"
+                        android:layout_height="@dimen/button_size"
+                        android:background="@drawable/outline_primary"
+                        android:visibility="gone" />
+
+                    <!-- Icon -->
+                    <ImageView
+                        android:id="@+id/icon_layer2"
+                        android:layout_width="@dimen/button_size"
+                        android:layout_height="@dimen/button_size"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_map"
+                        android:contentDescription="@string/layer2_icon" />
+                </FrameLayout>
+
+                <!-- Text -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Layer 2"
+                    android:textSize="@dimen/text_size_small"
+                    android:gravity="center"
+                    android:paddingTop="@dimen/padding_extra_small" />
+            </LinearLayout>
+
+            <!-- Button 3 -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="@dimen/padding_small"
+                android:layout_margin="@dimen/margin_small">
+
+                <!-- Outline and Icon -->
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <!-- Outline untuk Status Aktif/Nonaktif -->
+                    <View
+                        android:id="@+id/outline_layer3"
+                        android:layout_width="@dimen/button_size"
+                        android:layout_height="@dimen/button_size"
+                        android:background="@drawable/outline_layer_selector" />
+
+                    <!-- Outline untuk Layer yang Diklik -->
+                    <View
+                        android:id="@+id/active_outline_layer3"
+                        android:layout_width="@dimen/button_size"
+                        android:layout_height="@dimen/button_size"
+                        android:background="@drawable/outline_primary"
+                        android:visibility="gone" />
+
+                    <!-- Icon -->
+                    <ImageView
+                        android:id="@+id/icon_layer3"
+                        android:layout_width="@dimen/button_size"
+                        android:layout_height="@dimen/button_size"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_map"
+                        android:contentDescription="@string/layer3_icon" />
+                </FrameLayout>
+
+                <!-- Text -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Layer 3"
+                    android:textSize="@dimen/text_size_small"
+                    android:gravity="center"
+                    android:paddingTop="@dimen/padding_extra_small" />
+            </LinearLayout>
+
+            <!-- Tambahan Spacer View (Opsional) -->
+            <View
+                android:layout_width="@dimen/spacer_width"
+                android:layout_height="match_parent" />
+        </LinearLayout>
+    </HorizontalScrollView>
+</LinearLayout>

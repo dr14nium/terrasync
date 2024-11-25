@@ -1,6 +1,6 @@
 package com.drianium.terrasync.model
 
-data class SearchResultResponse(
+data class SearchResult(
     val id: Int,
     val geometry: String,
     val centroid: String,

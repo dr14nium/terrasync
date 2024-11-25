@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- State active (sedang update geolokasi) -->
+    <item android:drawable="@drawable/ic_geolocation_active" android:state_checked="true" />
+
+    <!-- State inactive (GPS mati) -->
+    <item android:drawable="@drawable/ic_geolocation_inactive" android:state_enabled="false" />
+
+    <!-- State default (tidak sedang update geolokasi) -->
+    <item android:drawable="@drawable/ic_geolocation_default" />
+</selector>

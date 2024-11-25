@@ -1,3 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Margins -->
+    <dimen name="margin_extra_small">4dp</dimen>
+    <dimen name="margin_small">8dp</dimen>
+    <dimen name="margin_medium">16dp</dimen>
+    <dimen name="margin_large">24dp</dimen>
+    <dimen name="margin_extra_large">32dp</dimen>
+
+    <!-- Padding -->
+    <dimen name="padding_extra_small">4dp</dimen>
+    <dimen name="padding_small">8dp</dimen>
+    <dimen name="padding_medium">12dp</dimen>
+    <dimen name="padding_large">16dp</dimen>
+    <dimen name="padding_extra_large">24dp</dimen>
+
+    <!-- Button Sizes -->
+    <dimen name="button_size_small">35dp</dimen>
+    <dimen name="button_size">50dp</dimen>
+    <dimen name="button_icon_size">24dp</dimen>
+    <dimen name="button_large_size">70dp</dimen>
+    <dimen name="fab_size">56dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
+
+    <!-- Icon Padding -->
+    <dimen name="button_icon_padding">8dp</dimen>
+    <dimen name="button_icon_large_padding">12dp</dimen>
+
+    <!-- CardView -->
+    <dimen name="card_corner_radius">16dp</dimen>
+    <dimen name="card_elevation">4dp</dimen>
+
+    <!-- Search Bar -->
+    <dimen name="search_bar_height">48dp</dimen>
+    <dimen name="search_bar_margin">16dp</dimen>
+
+    <!-- Text Sizes -->
+    <dimen name="text_size_small">12sp</dimen>
+    <dimen name="text_size_medium">16sp</dimen>
+    <dimen name="text_size_large">20sp</dimen>
+    <dimen name="text_size_extra_large">24sp</dimen>
+
+    <!-- Spacer -->
+    <dimen name="spacer_width">16dp</dimen>
+
 </resources>

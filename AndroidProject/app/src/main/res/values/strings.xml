@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">TerraSync</string>
+    <string name="title_activity_map">2D Map</string>
+    <string name="compass_icon">Compass Icon</string>
+    <string name="geolocation_icon">Geolocation Icon</string>
+    <string name="ar_icon">AR Icon</string>
+    <string name="basemap_icon">Basemap Icon</string>
+    <string name="measure_icon">Ruler Icon</string>
+    <string name="layer_icon">Layer Icon</string>
+
+    <!-- Autocomplete results -->
+    <string name="searchText">Cari lokasi di sini...</string>
+
+    <!-- Bottom Sheet Layer -->
+    <string name="bottom_sheet_title">Pilih Layer</string>
+    <string name="transparency_low">Transparansi Rendah</string>
+    <string name="transparency_high">Transparansi Tinggi</string>
+
+    <!-- Layer Icon Description -->
+    <string name="layer1_icon">Icon for Layer 1</string>
+    <string name="layer2_icon">Icon for Layer 2</string>
+    <string name="layer3_icon">Icon for Layer 3</string>
+    <string name="layer4_icon">Icon for Layer 4</string>
+
+</resources>

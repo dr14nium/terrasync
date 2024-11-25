@@ -1,0 +1,8 @@
+{
+"type": "FeatureCollection",
+"name": "btadrian",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "id": 1, "hgh": 0.5, "luas": 261.26338924293304, "LAT": -7.786170591154554, "LONG": 110.41113960021086, "info": "coba dulu deh" }, "geometry": { "type": "MultiPolygon", "coordinates": [ [ [ [ 110.41099064952229, -7.786210619974431 ], [ 110.410990407030539, -7.786151451988221 ], [ 110.411268545064033, -7.786114350750967 ], [ 110.411268060080545, -7.786209407515696 ], [ 110.41099064952229, -7.786210619974431 ] ] ] ] } }
+]
+}

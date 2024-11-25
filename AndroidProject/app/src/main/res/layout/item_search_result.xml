@@ -1,15 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_margin="24dp"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="0dp"
+    app:cardBackgroundColor="@android:color/transparent">
+
+<RelativeLayout
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:paddingVertical="2dp"
+android:paddingHorizontal="8dp">
+
+<!-- Icon -->
+    <ImageView
+        android:id="@+id/result_icon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="6dp"
+        android:src="@drawable/ic_map"
+        android:scaleType="centerCrop" />
+
+<!-- Text Container -->
+<LinearLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_toEndOf="@id/result_icon"
+    android:layout_toRightOf="@id/result_icon"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:layout_marginEnd="32dp">
 
+    <!-- NIB -->
     <TextView
-        android:id="@+id/result_name"
-        android:layout_width="match_parent"
+        android:id="@+id/result_nib"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="16sp"
-        android:textColor="@android:color/black" />
+        android:textColor="@android:color/black"
+        android:textSize="12sp"
+    android:textStyle="bold"
+    android:maxLines="1"
+    android:ellipsize="end" />
 
+    <!-- Name -->
+    <TextView
+        android:id="@+id/result_village"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/darker_gray"
+        android:textSize="10sp"
+    android:maxLines="1"
+    android:ellipsize="end" />
 </LinearLayout>
+
+<!-- Northwest Arrow Icon -->
+<ImageView
+    android:id="@+id/northwest_arrow"
+    android:layout_width="8dp"
+android:layout_height="8dp"
+android:layout_alignParentEnd="true"
+android:layout_alignParentRight="true"
+android:layout_marginEnd="6dp"
+android:src="@drawable/ic_northwest_arrow"
+android:tint="@color/primary" />
+</RelativeLayout>
+    </androidx.cardview.widget.CardView>

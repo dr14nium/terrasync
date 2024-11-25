@@ -1,0 +1,23 @@
+<resources>
+    <!-- Basic Colors -->
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <!-- Primary Colors -->
+    <color name="primary">#1755FE</color>
+    <color name="primary_light">#BACCFF</color>
+
+    <!-- Button States -->
+    <color name="btn_active_color">#1755FE</color>
+    <color name="btn_pressed_color">#1755FE</color>
+    <color name="btn_inactive_color">#FFFFFF</color>
+
+    <!-- Icon States -->
+    <color name="ic_pressed_color">#FFFFFF</color>
+    <color name="ic_active_color">#FFFFFF</color>
+    <color name="ic_inactive_color">#17333E</color>
+
+    <!-- Others Colors -->
+    <color name="black_overlay">#66000000</color>
+    <color name="transparent_fill">#80FFFFFF</color>
+</resources>

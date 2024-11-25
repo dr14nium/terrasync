@@ -1,51 +1,177 @@
-<?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/fullscreenBackgroundColor"
-    android:theme="@style/ThemeOverlay.TerraSync.FullscreenContainer"
-    tools:context=".MapActivity">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:fitsSystemWindows="false"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:descendantFocusability="beforeDescendants">
 
-    <!-- The primary full-screen view. This can be replaced with whatever view
-         is needed to present your content, e.g. VideoView, SurfaceView,
-         TextureView, etc. -->
-    <TextView
-        android:id="@+id/fullscreen_content"
+    <!-- Mapbox MapView -->
+    <com.mapbox.maps.MapView
+        android:id="@+id/mapView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center"
-        android:keepScreenOn="true"
-        android:text="@string/dummy_content"
-        android:textColor="?attr/fullscreenTextColor"
-        android:textSize="50sp"
-        android:textStyle="bold" />
+        app:mapbox_cameraTargetLat="-7.782930889964193"
+        app:mapbox_cameraTargetLng="110.37494788915689"
+        app:mapbox_cameraZoom="15.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
-    <!-- This FrameLayout insets its children based on system windows using
-         android:fitsSystemWindows. -->
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fitsSystemWindows="true">
+    <!-- Search input -->
+    <EditText
+        android:id="@+id/query_text"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/search_bar_height"
+        android:layout_margin="@dimen/search_bar_margin"
+        android:hint="@string/searchText"
+        android:background="@drawable/bg_searchbar"
+        android:padding="@dimen/padding_medium"
+        android:paddingStart="@dimen/padding_large"
+        android:drawableEnd="@drawable/ic_search"
+        android:drawablePadding="@dimen/padding_small"
+        android:textColor="@android:color/black"
+        android:imeOptions="actionSearch"
+        android:inputType="text"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-        <LinearLayout
-            android:id="@+id/fullscreen_content_controls"
-            style="@style/Widget.Theme.TerraSync.ButtonBar.Fullscreen"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|center_horizontal"
-            android:orientation="horizontal"
-            tools:ignore="UselessParent">
+    <!-- Vertical Button Layout -->
+    <LinearLayout
+        android:id="@+id/button_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="@dimen/margin_small"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginEnd="@dimen/margin_medium">
 
-            <Button
-                android:id="@+id/dummy_button"
-                style="?android:attr/buttonBarButtonStyle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/dummy_button" />
+        <!-- AR Button -->
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/buttonAR"
+            android:layout_width="@dimen/button_size_small"
+            android:layout_height="@dimen/button_size_small"
+            android:background="@drawable/bg_btn_ar_button"
+            android:src="@drawable/ic_ar"
+            android:tint="@drawable/ic_ar_selector"
+            android:padding="@dimen/button_icon_padding"
+            android:contentDescription="@string/ar_icon"
+            android:layout_marginBottom="@dimen/margin_medium"
+            android:clickable="true"
+            android:focusable="true" />
 
-        </LinearLayout>
-    </FrameLayout>
+        <!-- Basemap Button -->
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/buttonBasemap"
+            android:layout_width="@dimen/button_size_small"
+            android:layout_height="@dimen/button_size_small"
+            android:background="@drawable/bg_circle_button"
+            android:src="@drawable/ic_basemap"
+            android:tint="@drawable/ic_color_selector"
+            android:padding="@dimen/button_icon_padding"
+            android:contentDescription="@string/basemap_icon"
+            android:layout_marginBottom="@dimen/margin_medium"
+            android:clickable="true"
+            android:focusable="true" />
 
-</FrameLayout>
+        <!-- Ruler Button -->
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/buttonRuler"
+            android:layout_width="@dimen/button_size_small"
+            android:layout_height="@dimen/button_size_small"
+            android:background="@drawable/bg_circle_button"
+            android:src="@drawable/ic_measure"
+            android:tint="@drawable/ic_color_selector"
+            android:padding="@dimen/button_icon_padding"
+            android:contentDescription="@string/measure_icon"
+            android:layout_marginBottom="@dimen/margin_medium"
+            android:clickable="true"
+            android:focusable="true" />
+
+        <!-- Layer Button -->
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/buttonLayer"
+            android:layout_width="@dimen/button_size_small"
+            android:layout_height="@dimen/button_size_small"
+            android:background="@drawable/bg_circle_button"
+            android:src="@drawable/ic_layer"
+            android:tint="@drawable/ic_color_selector"
+            android:padding="@dimen/button_icon_padding"
+            android:contentDescription="@string/layer_icon"
+            android:layout_marginBottom="@dimen/margin_medium"
+            android:clickable="true"
+            android:focusable="true" />
+    </LinearLayout>
+
+    <!-- Autocomplete results -->
+    <com.mapbox.search.ui.view.SearchResultsView
+        android:id="@+id/search_results_view"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/rounded_background"
+        android:visibility="invisible"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:paddingBottom="@dimen/padding_large"
+        android:paddingTop="@dimen/padding_small"
+        android:layout_marginTop="@dimen/margin_small"
+        android:elevation="2dp"
+        app:layout_constraintTop_toBottomOf="@id/query_text"
+        app:layout_constraintStart_toStartOf="@id/query_text"
+        app:layout_constraintEnd_toEndOf="@id/query_text" />
+
+    <!-- Suggestions RecyclerView -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/suggestionsRecyclerView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        android:paddingTop="@dimen/padding_small"
+        android:paddingBottom="@dimen/padding_large"
+        android:clipToPadding="false"
+        android:background="@drawable/rounded_background"
+        android:layout_marginTop="@dimen/margin_small"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:elevation="2dp"
+        app:layout_constraintTop_toBottomOf="@id/query_text"
+        app:layout_constraintStart_toStartOf="@id/query_text"
+        app:layout_constraintEnd_toEndOf="@id/query_text" />
+
+    <!-- Custom Compass ImageView -->
+    <ImageView
+        android:id="@+id/customCompass"
+        android:layout_width="@dimen/button_size"
+        android:layout_height="@dimen/button_size"
+        android:src="@drawable/ic_compass"
+        android:contentDescription="@string/compass_icon"
+        android:elevation="1dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/buttonGeolocation"
+        android:layout_marginEnd="@dimen/margin_large"
+        android:layout_marginBottom="@dimen/margin_small" />
+
+    <!-- Geolocation Button -->
+    <ImageButton
+        android:id="@+id/buttonGeolocation"
+        android:layout_width="@dimen/button_size"
+        android:layout_height="@dimen/button_size"
+        android:background="@drawable/bg_nav_rounded"
+        android:elevation="2dp"
+        android:src="@drawable/ic_geolocation_state"
+        android:contentDescription="@string/geolocation_icon"
+        android:scaleType="fitCenter"
+        android:padding="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginEnd="@dimen/margin_large"
+        android:layout_marginBottom="@dimen/margin_extra_large" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

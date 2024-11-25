@@ -1,9 +1,10 @@
 <resources>
-
+    <!-- Fullscreen ActionBar style -->
     <style name="Widget.Theme.TerraSync.ActionBar.Fullscreen" parent="Widget.AppCompat.ActionBar">
         <item name="android:background">@color/black_overlay</item>
     </style>
 
+    <!-- Fullscreen Button Bar style -->
     <style name="Widget.Theme.TerraSync.ButtonBar.Fullscreen" parent="">
         <item name="android:background">@color/black_overlay</item>
         <item name="android:buttonBarStyle">?android:attr/buttonBarStyle</item>
