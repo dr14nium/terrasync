@@ -1,0 +1,31 @@
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- State pressed -->
+    <item android:state_pressed="true">
+        <shape android:shape="oval">
+            <solid android:color="@color/btn_active_color" />
+            <size
+                android:width="@dimen/button_size"
+                android:height="@dimen/button_size" />
+        </shape>
+    </item>
+
+    <!-- State aktif -->
+    <item android:state_selected="true">
+        <shape android:shape="oval">
+            <solid android:color="@color/btn_active_color" />
+            <size
+                android:width="@dimen/button_size"
+                android:height="@dimen/button_size" />
+        </shape>
+    </item>
+
+    <!-- State tidak aktif -->
+    <item>
+        <shape android:shape="oval">
+            <solid android:color="@color/btn_inactive_color" />
+            <size
+                android:width="@dimen/button_size"
+                android:height="@dimen/button_size" />
+        </shape>
+    </item>
+</selector>
