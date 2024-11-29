@@ -15,10 +15,10 @@ app.use(bodyParser.urlencoded({ extended: false })); // URL-encoded parser
 // PostgreSQL connection configuration local server
 const pool = new Pool({
   user: 'postgres',
-  host: 'localhost',
+  host: '34.34.218.166',
   database: 'data',
-  password: 'adrian$5758',
-  port: 8888,
+  password: 'postgres',
+  port: 5432,
 });
 
 // Check connection to PostgreSQL once on start
