@@ -1,0 +1,38 @@
+name: Deploy to Cloud Run
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout kode dari repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Autentikasi ke Google Cloud
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      # Set Google Cloud project
+      - name: Set Google Cloud project
+        run: gcloud config set project <PROJECT_ID>
+
+      # Build dan Push Docker Image
+      - name: Build and push Docker image
+        run: |
+          gcloud builds submit --tag gcr.io/<PROJECT_ID>/terrasync-server:latest ./Server
+
+      # Deploy ke Cloud Run
+      - name: Deploy to Cloud Run
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: terrasync-server
+          region: asia-southeast2
+          image: gcr.io/<PROJECT_ID>/terrasync-server:latest
