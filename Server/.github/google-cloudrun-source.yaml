@@ -20,10 +20,16 @@ jobs:
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
 
+      # Set Google Cloud project
+      - name: Set Google Cloud project
+        run: |
+          PROJECT_ID=$(gcloud config get-value project)
+          echo "PROJECT_ID=${PROJECT_ID}" >> $GITHUB_ENV
+
       # Build and push Docker image
       - name: Build and push Docker image
         run: |
-          gcloud builds submit --tag gcr.io/$(gcloud config get-value project)/terrasync-server:latest ./Server
+          gcloud builds submit --tag gcr.io/$PROJECT_ID/terrasync-server:latest ./Server
 
       # Deploy to Cloud Run
       - name: Deploy to Cloud Run
@@ -31,4 +37,4 @@ jobs:
         with:
           service: terrasync-server
           region: asia-southeast2
-          image: gcr.io/$(gcloud config get-value project)/terrasync-server:latest
+          image: gcr.io/${{ env.PROJECT_ID }}/terrasync-server:latest
