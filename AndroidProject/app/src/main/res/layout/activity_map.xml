@@ -33,7 +33,7 @@
         android:paddingStart="@dimen/padding_large"
         android:drawableEnd="@drawable/ic_search"
         android:drawablePadding="@dimen/padding_small"
-        android:textColor="@android:color/black"
+        android:textColor="@color/black"
         android:imeOptions="actionSearch"
         android:inputType="text"
         app:layout_constraintTop_toTopOf="parent"
@@ -173,5 +173,40 @@
         android:layout_marginEnd="@dimen/margin_large"
         android:layout_marginBottom="@dimen/margin_extra_large" />
 
+    <!-- Panel Ruler -->
+    <LinearLayout
+        android:id="@+id/panel_ruler"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/bg_panel"
+        android:padding="@dimen/padding_medium"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/customCompass"
+        android:layout_marginEnd="@dimen/margin_large"
+        app:layout_constraintBottom_toBottomOf="@id/buttonGeolocation"
+        android:layout_marginStart="@dimen/margin_large">
+
+        <!-- Title -->
+        <TextView
+            android:id="@+id/ruler_panel_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/ruler_panel_title"
+            android:textSize="@dimen/text_size_large"
+            android:textColor="@color/primary"
+            android:textStyle="bold"
+            android:layout_marginTop="@dimen/margin_small"
+            android:layout_marginLeft="@dimen/margin_small"/>
+
+        <!-- Attributes Container -->
+        <LinearLayout
+            android:id="@+id/ruler_attributes_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_margin="@dimen/margin_small"/>
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

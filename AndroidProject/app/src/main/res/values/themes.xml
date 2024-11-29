@@ -1,13 +1,19 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base Theme -->
     <style name="Base.Theme.TerraSync" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Primary Colors -->
         <item name="colorOnPrimary">@android:color/white</item>
+        <item name="colorPrimary">@color/primary</item>
+
+        <!-- Text Colors -->
+        <item name="android:textColorPrimary">@color/text_primary_light</item>
+        <item name="android:textColorSecondary">@color/text_secondary_light</item>
 
         <!-- Transparent System Bars -->
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-        <item name="android:windowLightStatusBar">true</item> <!-- Ikon status bar tetap terlihat -->
+        <item name="android:windowLightStatusBar">true</item> <!-- Icons tetap terlihat di status bar -->
     </style>
 
     <!-- Application-wide Theme -->

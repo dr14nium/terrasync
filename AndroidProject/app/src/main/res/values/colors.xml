@@ -1,28 +1,36 @@
 <resources>
     <!-- Basic Colors -->
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <color name="black">#1b1a1d</color>
+    <color name="white">#ffffff</color>
 
     <!-- Primary Colors -->
     <color name="primary">#1755FE</color>
     <color name="primary_light">#7399fe</color>
 
+    <!-- Dynamic Text Colors -->
+    <color name="text_primary_light">#000000</color>
+    <color name="text_primary_dark">#FFFFFF</color>
+
+    <color name="text_secondary_light">#737373</color>
+    <color name="text_secondary_dark">#B3B3B3</color>
+
     <!-- Button States -->
     <color name="btn_active_color">#1755FE</color>
     <color name="btn_pressed_color">#1755FE</color>
-    <color name="btn_inactive_color">#FFFFFF</color>
+    <color name="btn_inactive_light">#FFFFFF</color>
+    <color name="btn_inactive_dark">#1A1A1A</color>
 
     <!-- Icon States -->
-    <color name="ic_pressed_color">#FFFFFF</color>
-    <color name="ic_active_color">#FFFFFF</color>
-    <color name="ic_inactive_color">#17333E</color>
+    <color name="ic_active_light">#FFFFFF</color>
+    <color name="ic_active_dark">#737373</color>
 
     <!-- Others Colors -->
     <color name="black_overlay">#66000000</color>
     <color name="transparent_fill">#80FFFFFF</color>
 
-    <!-- Dots Colors for Bottomsheet Information -->
-    <color name="active_dot">#FF5733</color>
-    <color name="inactive_dot">#CCCCCC</color>
-
+    <!-- Tambahan Warna yang Hilang -->
+    <color name="btn_inactive_color">#FFFFFF</color>
+    <color name="ic_inactive_color">#17333E</color>
+    <color name="ic_active_color">#FFFFFF</color>
+    <color name="ic_pressed_color">#FFFFFF</color>
 </resources>

@@ -23,5 +23,21 @@
     <string name="layer1_icon">Icon for Layer 1</string>
     <string name="layer2_icon">Icon for Layer 2</string>
     <string name="layer3_icon">Icon for Layer 3</string>
+    <string name="basemap_title">Pilih Peta Dasar</string>
+    <string name="basemap1_icon">Icon for basemap 1</string>
+    <string name="basemap2_icon">Icon for basemap 2</string>
+    <string name="basemap1_name">Standar</string>
+    <string name="basemap2_name">Monokrom</string>
+    <string name="basemap3_name">Satelit</string>
+    <string name="basemap3_icon">Icon for basemap 3</string>
+
+    <!-- Pengukuran -->
+    <string name="ruler_title">Pengukuran</string>
+    <string name="ruler_button_desc">Buka Ruler</string>
+    <string name="distance_label">Jarak:</string>
+    <string name="area_label">Luas:</string>
+    <string name="distance_value">%1$.2f meter</string>
+    <string name="area_value">%1$.2f m²</string>
+    <string name="ruler_panel_title">Pengukuran</string>
 
 </resources>

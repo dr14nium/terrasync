@@ -1,7 +1,7 @@
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:padding="@dimen/padding_medium">
 
@@ -102,7 +102,8 @@
                         android:id="@+id/outline_layer1"
                         android:layout_width="@dimen/button_size"
                         android:layout_height="@dimen/button_size"
-                        android:background="@drawable/outline_layer_selector" />
+                        android:background="@drawable/outline_layer_selector"
+                        android:elevation="3dp"/>
 
                     <!-- Outline untuk Layer yang Diklik -->
                     <View
@@ -110,16 +111,25 @@
                         android:layout_width="@dimen/button_size"
                         android:layout_height="@dimen/button_size"
                         android:background="@drawable/outline_primary"
-                        android:visibility="gone" />
+                        android:visibility="gone"
+                        android:elevation="4dp"/>
 
                     <!-- Icon -->
-                    <ImageView
-                        android:id="@+id/icon_layer1"
+                    <androidx.cardview.widget.CardView
                         android:layout_width="@dimen/button_size"
                         android:layout_height="@dimen/button_size"
-                        android:layout_gravity="center"
-                        android:src="@drawable/ic_map"
-                        android:contentDescription="@string/layer1_icon" />
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="0dp"
+                        android:layout_gravity="center">
+
+                        <ImageView
+                            android:id="@+id/icon_layer1"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:src="@drawable/layer_admin"
+                            android:contentDescription="@string/layer1_icon"
+                            android:scaleType="centerCrop" />
+                    </androidx.cardview.widget.CardView>
                 </FrameLayout>
 
 
@@ -152,7 +162,8 @@
                         android:id="@+id/outline_layer2"
                         android:layout_width="@dimen/button_size"
                         android:layout_height="@dimen/button_size"
-                        android:background="@drawable/outline_layer_selector" />
+                        android:background="@drawable/outline_layer_selector"
+                        android:elevation="3dp"/>
 
                     <!-- Outline untuk Layer yang Diklik -->
                     <View
@@ -160,16 +171,25 @@
                         android:layout_width="@dimen/button_size"
                         android:layout_height="@dimen/button_size"
                         android:background="@drawable/outline_primary"
-                        android:visibility="gone" />
+                        android:visibility="gone"
+                        android:elevation="4dp"/>
 
                     <!-- Icon -->
-                    <ImageView
-                        android:id="@+id/icon_layer2"
+                    <androidx.cardview.widget.CardView
                         android:layout_width="@dimen/button_size"
                         android:layout_height="@dimen/button_size"
-                        android:layout_gravity="center"
-                        android:src="@drawable/ic_map"
-                        android:contentDescription="@string/layer2_icon" />
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="0dp"
+                        android:layout_gravity="center">
+
+                        <ImageView
+                            android:id="@+id/icon_layer2"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:src="@drawable/layer_parcel"
+                            android:contentDescription="@string/layer2_icon"
+                            android:scaleType="centerCrop" />
+                    </androidx.cardview.widget.CardView>
                 </FrameLayout>
 
                 <!-- Text -->
@@ -201,7 +221,8 @@
                         android:id="@+id/outline_layer3"
                         android:layout_width="@dimen/button_size"
                         android:layout_height="@dimen/button_size"
-                        android:background="@drawable/outline_layer_selector" />
+                        android:background="@drawable/outline_layer_selector"
+                        android:elevation="3dp"/>
 
                     <!-- Outline untuk Layer yang Diklik -->
                     <View
@@ -209,16 +230,25 @@
                         android:layout_width="@dimen/button_size"
                         android:layout_height="@dimen/button_size"
                         android:background="@drawable/outline_primary"
-                        android:visibility="gone" />
+                        android:visibility="gone"
+                        android:elevation="4dp"/>
 
                     <!-- Icon -->
-                    <ImageView
-                        android:id="@+id/icon_layer3"
+                    <androidx.cardview.widget.CardView
                         android:layout_width="@dimen/button_size"
                         android:layout_height="@dimen/button_size"
-                        android:layout_gravity="center"
-                        android:src="@drawable/ic_map"
-                        android:contentDescription="@string/layer3_icon" />
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="0dp"
+                        android:layout_gravity="center">
+
+                        <ImageView
+                            android:id="@+id/icon_layer3"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:src="@drawable/layer_spatialpattern"
+                            android:contentDescription="@string/layer3_icon"
+                            android:scaleType="centerCrop" />
+                    </androidx.cardview.widget.CardView>
                 </FrameLayout>
 
                 <!-- Text -->
