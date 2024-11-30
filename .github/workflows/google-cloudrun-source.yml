@@ -19,7 +19,6 @@ jobs:
         uses: google-github-actions/auth@v2
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
-          impersonate_service_account: 458189808803-compute@developer.gserviceaccount.com
 
       # Set Google Cloud project
       - name: Set Google Cloud project
@@ -30,13 +29,16 @@ jobs:
       - name: Build and push Docker image
         run: |
           gcloud builds submit \
+            --impersonate-service-account=458189808803-compute@developer.gserviceaccount.com \
             --tag gcr.io/$PROJECT_ID/terrasync-server:latest \
             ./Server
 
       # Deploy to Cloud Run
       - name: Deploy to Cloud Run
-        uses: google-github-actions/deploy-cloudrun@v2
-        with:
-          service: terrasync-server
-          region: asia-southeast2
-          image: gcr.io/${{ env.PROJECT_ID }}/terrasync-server:latest
+        run: |
+          gcloud run deploy terrasync-server \
+            --impersonate-service-account=458189808803-compute@developer.gserviceaccount.com \
+            --image gcr.io/$PROJECT_ID/terrasync-server:latest \
+            --region asia-southeast2 \
+            --platform managed \
+            --allow-unauthenticated
