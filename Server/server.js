@@ -15,7 +15,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 // PostgreSQL Welcome
 app.get('/', (req, res) => {
-  res.send('Terrasync Server API!!!!');
+  res.send('Terrasync Server API!');
 });
 
 // PostgreSQL connection configuration
