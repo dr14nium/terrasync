@@ -20,10 +20,10 @@ app.get('/', (req, res) => {
 
 // PostgreSQL connection configuration
 const pool = new Pool({
-  user: process.env.DB_USER || 'postgres',
-  host: process.env.DB_HOST || '34.34.218.166', // Host IP
-  database: process.env.DB_NAME || 'data',
-  password: process.env.DB_PASSWORD || 'postgres',
+  user: process.env.DB_USER,
+  host: process.env.DB_HOST,
+  database: process.env.DB_NAME,
+  password: process.env.DB_PASSWORD,
   port: 5432,
 });
 
