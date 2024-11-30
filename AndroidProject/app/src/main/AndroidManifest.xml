@@ -39,7 +39,7 @@
             android:name=".ui.map.MapActivity"
             android:exported="true"
             android:theme="@style/Theme.TerraSync.MapActivity"
-            android:screenOrientation="portrait">
+            android:configChanges="uiMode|screenSize|orientation">
         </activity>
 
         <!-- Optional: Add Metadata for Map Services -->

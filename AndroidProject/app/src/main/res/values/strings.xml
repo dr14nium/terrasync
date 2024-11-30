@@ -39,5 +39,6 @@
     <string name="distance_value">%1$.2f meter</string>
     <string name="area_value">%1$.2f m²</string>
     <string name="ruler_panel_title">Pengukuran</string>
+    <string name="loading">Loading ...</string>
 
 </resources>

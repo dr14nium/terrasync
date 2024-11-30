@@ -11,6 +11,7 @@ import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.GestureDetector
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -18,6 +19,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowInsetsController
 import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -53,6 +55,8 @@ import com.mapbox.maps.plugin.animation.camera
 import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.RenderedQueryGeometry
 import com.mapbox.maps.RenderedQueryOptions
+import com.mapbox.maps.ScreenBox
+import com.mapbox.maps.ScreenCoordinate
 import com.mapbox.maps.Style
 import com.mapbox.maps.extension.style.expressions.generated.Expression
 import com.mapbox.maps.extension.style.expressions.generated.Expression.Companion.match
@@ -579,51 +583,59 @@ class MapActivity : ComponentActivity() {
         if (selectedIndex < basemapStyles.size) {
             val selectedStyle = basemapStyles[selectedIndex]
 
+            showLoading(true) // Tampilkan loading
+
             initializePointAnnotationManager()
 
             binding.mapView.mapboxMap.loadStyleUri(selectedStyle) { style ->
-                // Tambahkan ulang ikon untuk blue dot dan marker
-                addIconsToStyle(style)
+                try {
+                    // Tambahkan ulang ikon untuk blue dot dan marker
+                    addIconsToStyle(style)
 
-                // Jika geoLocationMarker sudah ada, tambahkan kembali
-                geoLocationMarker?.let { marker ->
-                    pointAnnotationManager?.create(
-                        PointAnnotationOptions()
-                            .withPoint(marker.point!!)
-                            .withIconImage("geolocation-icon") // Ikon biru
-                    )
-                }
-
-                // Jika marker pink untuk selectPlace sudah ada, tambahkan kembali
-                pointAnnotationManager?.annotations?.forEach { annotation ->
-                    if (annotation.iconImage == "marker-icon") {
+                    // Jika geoLocationMarker sudah ada, tambahkan kembali
+                    geoLocationMarker?.let { marker ->
                         pointAnnotationManager?.create(
                             PointAnnotationOptions()
-                                .withPoint(annotation.point)
-                                .withIconImage("marker-icon") // Ikon pink
+                                .withPoint(marker.point!!)
+                                .withIconImage("geolocation-icon") // Ikon biru
                         )
                     }
+
+                    // Jika marker pink untuk selectPlace sudah ada, tambahkan kembali
+                    pointAnnotationManager?.annotations?.forEach { annotation ->
+                        if (annotation.iconImage == "marker-icon") {
+                            pointAnnotationManager?.create(
+                                PointAnnotationOptions()
+                                    .withPoint(annotation.point)
+                                    .withIconImage("marker-icon") // Ikon pink
+                            )
+                        }
+                    }
+
+                    // Tambahkan ulang blue dot jika ada
+                    lastClickedPoint?.let { point ->
+                        addOrMoveBlueDot(style, point)
+                    }
+
+                    // Perbarui layer dan data geojson
+                    ensureGeoJsonCacheUpdated("BatasAdministrasi")
+                    ensureGeoJsonCacheUpdated("BidangTanah")
+                    ensureGeoJsonCacheUpdated("PolaRuang")
+
+                    addLayersToMap(style)
+                    reloadActiveLayers()
+
+                    // Perbarui tampilan basemap aktif
+                    activeOutlines.forEachIndexed { index, view ->
+                        view.visibility = if (index == selectedIndex) View.VISIBLE else View.GONE
+                    }
+
+                    currentActiveBasemap = selectedIndex
+                } catch (e: Exception) {
+                    Log.e("MapActivity", "Error switching basemap: ${e.message}", e)
+                } finally {
+                    showLoading(false) // Sembunyikan loading
                 }
-
-                // Tambahkan ulang blue dot jika ada
-                lastClickedPoint?.let { point ->
-                    addOrMoveBlueDot(style, point)
-                }
-
-                // Perbarui layer dan data geojson
-                ensureGeoJsonCacheUpdated("BatasAdministrasi")
-                ensureGeoJsonCacheUpdated("BidangTanah")
-                ensureGeoJsonCacheUpdated("PolaRuang")
-
-                addLayersToMap(style)
-                reloadActiveLayers()
-
-                // Perbarui tampilan basemap aktif
-                activeOutlines.forEachIndexed { index, view ->
-                    view.visibility = if (index == selectedIndex) View.VISIBLE else View.GONE
-                }
-
-                currentActiveBasemap = selectedIndex
             }
         }
     }
@@ -669,20 +681,17 @@ class MapActivity : ComponentActivity() {
 
     private fun reloadActiveLayers() {
         val mapboxMap = binding.mapView.mapboxMap
+
         mapboxMap.getStyle { style ->
-            layerOutlines.forEachIndexed { index, view ->
-                val tableName = when (index) {
-                    0 -> "BatasAdministrasi"
-                    1 -> "BidangTanah"
-                    2 -> "PolaRuang"
-                    else -> return@forEachIndexed
-                }
-                if (view.isSelected) {
-                    val cachedData = MapUtils.readGeoJsonFromCache(geoJsonCacheDir, "layer-$tableName.geojson")
-                    if (!cachedData.isNullOrEmpty()) {
-                        loadGeoJsonToMap(tableName, cachedData)
-                    }
+            val layers = listOf("BatasAdministrasi", "BidangTanah", "PolaRuang")
+
+            layers.forEach { tableName ->
+                val cachedData = MapUtils.readGeoJsonFromCache(geoJsonCacheDir, "layer-$tableName.geojson")
+                if (!cachedData.isNullOrEmpty()) {
+                    loadGeoJsonToMap(tableName, cachedData)
                     setLayerVisibility(tableName, true) // Pastikan layer terlihat
+                } else {
+                    Log.w("MapActivity", "No cached data found for $tableName.")
                 }
             }
         }
@@ -714,8 +723,14 @@ class MapActivity : ComponentActivity() {
         // Array untuk menyimpan transparansi masing-masing layer
         val layerTransparency = mutableListOf(1.0f, 1.0f, 1.0f) // Default transparansi = 100% (1.0)
 
+        // Tambahkan GestureDetector untuk mendeteksi double-tap
+        val gestureDetectorLayer1 = createDoubleTapGestureDetector("BatasAdministrasi")
+        val gestureDetectorLayer2 = createDoubleTapGestureDetector("BidangTanah")
+        val gestureDetectorLayer3 = createDoubleTapGestureDetector("PolaRuang")
+
         // Listener untuk setiap button layer
         bottomSheetView.findViewById<ImageView>(R.id.icon_layer1)?.apply {
+            setOnTouchListener { _, event -> gestureDetectorLayer1.onTouchEvent(event) }
             setOnClickListener {
                 if (outlineLayer1.isSelected) {
                     setupTransparencySlider(0, "BatasAdministrasi") // Tambahkan tableName
@@ -728,6 +743,7 @@ class MapActivity : ComponentActivity() {
         }
 
         bottomSheetView.findViewById<ImageView>(R.id.icon_layer2)?.apply {
+            setOnTouchListener { _, event -> gestureDetectorLayer2.onTouchEvent(event) }
             setOnClickListener {
                 if (outlineLayer2.isSelected) {
                     setupTransparencySlider(1, "BidangTanah") // Tambahkan tableName
@@ -740,6 +756,7 @@ class MapActivity : ComponentActivity() {
         }
 
         bottomSheetView.findViewById<ImageView>(R.id.icon_layer3)?.apply {
+            setOnTouchListener { _, event -> gestureDetectorLayer3.onTouchEvent(event) }
             setOnClickListener {
                 if (outlineLayer3.isSelected) {
                     setupTransparencySlider(2, "PolaRuang") // Tambahkan tableName
@@ -770,6 +787,126 @@ class MapActivity : ComponentActivity() {
         }
     }
 
+    // Fungsi untuk membuat GestureDetector untuk mendeteksi double-tap
+    private fun createDoubleTapGestureDetector(layerName: String): GestureDetector {
+        return GestureDetector(this, object : GestureDetector.SimpleOnGestureListener() {
+            override fun onDoubleTap(event: MotionEvent): Boolean {
+                zoomToActiveLayer(layerName)
+                return true
+            }
+        })
+    }
+
+    // Fungsi untuk zoom ke layer aktif
+    private fun zoomToActiveLayer(layerName: String) {
+        val mapboxMap = binding.mapView.mapboxMap
+        mapboxMap.getStyle { style ->
+            val layerId = "layer-$layerName"
+
+            // Define the screen box for querying visible features
+            val screenBox = ScreenBox(
+                ScreenCoordinate(0.0, 0.0), // Top-left corner
+                ScreenCoordinate(binding.mapView.width.toDouble(), binding.mapView.height.toDouble()) // Bottom-right corner
+            )
+
+            mapboxMap.queryRenderedFeatures(
+                RenderedQueryGeometry(screenBox),
+                RenderedQueryOptions(listOf(layerId), null)
+            ) { result ->
+                if (result.isValue && result.value != null) {
+                    val features = result.value!!.mapNotNull { it.queriedFeature?.feature }
+                    if (features.isNotEmpty()) {
+                        val bounds = getBoundsForFeatures(features)
+                        if (bounds != null) {
+                            val center = calculateCenter(bounds)
+
+                            // Adjust zoom dynamically based on the size of the bounding box
+                            val zoomLevel = calculateZoomLevel(bounds)
+
+                            // Fly to the dynamically calculated zoom and center
+                            binding.mapView.camera.flyTo(
+                                CameraOptions.Builder()
+                                    .center(center)
+                                    .zoom(zoomLevel)
+                                    .build(),
+                                mapAnimationOptions { duration(2000) }
+                            )
+                        } else {
+                            Toast.makeText(this, "Layer $layerName tidak memiliki data yang dapat ditampilkan.", Toast.LENGTH_SHORT).show()
+                        }
+                    } else {
+                        Toast.makeText(this, "Layer $layerName tidak memiliki fitur yang terlihat di layar.", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    Toast.makeText(this, "Query gagal atau layer $layerName tidak terlihat.", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+    private fun calculateZoomLevel(bounds: Polygon): Double {
+        val coordinates = bounds.coordinates().flatten()
+        val lats = coordinates.map { it.latitude() }
+        val lngs = coordinates.map { it.longitude() }
+
+        val latDiff = lats.maxOrNull()!! - lats.minOrNull()!!
+        val lngDiff = lngs.maxOrNull()!! - lngs.minOrNull()!!
+
+        val maxDiff = maxOf(latDiff, lngDiff)
+        return when {
+            maxDiff < 0.0001 -> 22.0 // Ultra close zoom
+            maxDiff < 0.0005 -> 20.0 // Extremely small area
+            maxDiff < 0.001 -> 19.0  // Very small area
+            maxDiff < 0.005 -> 18.0  // Small area
+            maxDiff < 0.01 -> 17.0   // Small to medium area
+            maxDiff < 0.1 -> 15.0    // Medium area
+            maxDiff < 1.0 -> 13.0    // Large area
+            else -> 11.0             // Very large area
+        }
+    }
+
+    // Fungsi untuk menghitung bounding box dari fitur
+    private fun getBoundsForFeatures(features: List<Feature>): Polygon? {
+        val points = features.flatMap { feature ->
+            when (val geometry = feature.geometry()) {
+                is Polygon -> geometry.coordinates().flatten()
+                is MultiPolygon -> geometry.coordinates().flatten().flatten()
+                is Point -> listOf(geometry)
+                else -> emptyList()
+            }
+        }
+
+        if (points.isEmpty()) return null
+
+        val minLng = points.minOf { it.longitude() }
+        val maxLng = points.maxOf { it.longitude() }
+        val minLat = points.minOf { it.latitude() }
+        val maxLat = points.maxOf { it.latitude() }
+
+        return Polygon.fromLngLats(
+            listOf(
+                listOf(
+                    Point.fromLngLat(minLng, minLat),
+                    Point.fromLngLat(maxLng, minLat),
+                    Point.fromLngLat(maxLng, maxLat),
+                    Point.fromLngLat(minLng, maxLat),
+                    Point.fromLngLat(minLng, minLat)
+                )
+            )
+        )
+    }
+
+    private fun calculateCenter(bounds: Polygon): Point {
+        val coordinates = bounds.coordinates().flatten()
+        val lats = coordinates.map { it.latitude() }
+        val lngs = coordinates.map { it.longitude() }
+
+        val centerLat = (lats.minOrNull()!! + lats.maxOrNull()!!) / 2
+        val centerLng = (lngs.minOrNull()!! + lngs.maxOrNull()!!) / 2
+
+        return Point.fromLngLat(centerLng, centerLat)
+    }
+
     private fun toggleLayer(selectedIndex: Int, tableName: String) {
         val selectedView = layerOutlines[selectedIndex]
         val isAlreadyActive = selectedView?.isSelected == true
@@ -782,39 +919,57 @@ class MapActivity : ComponentActivity() {
             transparencyControlGroup.visibility = View.GONE
             Log.d("MapActivity", "Layer $tableName hidden.")
         } else {
-            // Tampilkan layer jika belum aktif
-            selectedView?.isSelected = true
+            // Tampilkan loading sebelum proses
+            showLoading(true)
 
-            // Pastikan sumber layer dimuat sebelum ditampilkan
-            val cachedData = MapUtils.readGeoJsonFromCache(geoJsonCacheDir, "layer-$tableName.geojson")
-            if (cachedData.isNullOrEmpty()) {
-                Log.e("MapActivity", "Cached GeoJSON for $tableName is empty or null.")
-                return
-            } else {
-                loadGeoJsonToMap(tableName, cachedData)
-                Log.d("MapActivity", "Layer $tableName successfully loaded and made visible.")
-            }
+            CoroutineScope(Dispatchers.IO).launch {
+                try {
+                    // Periksa cache sebelum memuat
+                    val cachedData = MapUtils.readGeoJsonFromCache(geoJsonCacheDir, "layer-$tableName.geojson")
+                    if (cachedData.isNullOrEmpty()) {
+                        Log.e("MapActivity", "Cached GeoJSON for $tableName is empty or null.")
+                        withContext(Dispatchers.Main) {
+                            showLoading(false)
+                            Toast.makeText(this@MapActivity, "Gagal memuat layer $tableName!", Toast.LENGTH_SHORT).show()
+                        }
+                        return@launch
+                    }
 
-            // Set visibilitas layer ke true
-            setLayerVisibility(tableName, true) // Pastikan layer ditampilkan
-            setupTransparencySlider(selectedIndex, tableName)
-            activeOutlines.forEachIndexed { index, view ->
-                view.visibility = if (index == selectedIndex) View.VISIBLE else View.GONE
+                    // Muat GeoJSON ke peta
+                    loadGeoJsonToMap(tableName, cachedData)
+                    Log.d("MapActivity", "Layer $tableName successfully loaded and made visible.")
+
+                    // Set visibilitas layer ke true di UI thread
+                    withContext(Dispatchers.Main) {
+                        selectedView?.isSelected = true
+                        setLayerVisibility(tableName, true)
+                        setupTransparencySlider(selectedIndex, tableName)
+                        activeOutlines.forEachIndexed { index, view ->
+                            view.visibility = if (index == selectedIndex) View.VISIBLE else View.GONE
+                        }
+                        Log.d("MapActivity", "Layer $tableName shown.")
+                    }
+                } catch (e: Exception) {
+                    Log.e("MapActivity", "Error loading layer $tableName: ${e.message}", e)
+                } finally {
+                    // Pastikan loading dihentikan setelah semua selesai
+                    withContext(Dispatchers.Main) {
+                        showLoading(false)
+                    }
+                }
             }
-            Log.d("MapActivity", "Layer $tableName shown.")
         }
     }
 
     private fun setLayerVisibility(tableName: String, visible: Boolean) {
-        val mapboxMap = binding.mapView.mapboxMap
-        mapboxMap.getStyle { style ->
+        binding.mapView.mapboxMap.getStyle { style ->
             val layerId = "layer-$tableName"
             val layer = style.getLayer(layerId)
             if (layer != null) {
                 layer.visibility(if (visible) Visibility.VISIBLE else Visibility.NONE)
-                Log.d("MapActivity", "Layer $layerId visibility set to ${if (visible) "VISIBLE" else "NONE"}.")
             } else {
-                Log.e("MapActivity", "Layer $layerId not found when setting visibility.")
+                Log.e("MapActivity", "Layer $layerId not found. Reloading data from server.")
+                ensureGeoJsonCacheUpdated(tableName) // Fetch ulang data
             }
         }
     }
@@ -870,6 +1025,13 @@ class MapActivity : ComponentActivity() {
         }
     }
 
+    private fun showLoading(isLoading: Boolean) {
+        runOnUiThread {
+            val loadingView = findViewById<FrameLayout>(R.id.loading_view)
+            loadingView.visibility = if (isLoading) View.VISIBLE else View.GONE
+        }
+    }
+
     private fun ensureGeoJsonCacheUpdated(tableName: String) {
         val cacheFileName = "layer-$tableName.geojson"
         val cacheFile = File(geoJsonCacheDir, cacheFileName)
@@ -878,26 +1040,97 @@ class MapActivity : ComponentActivity() {
             val shouldUpdateCache = !cacheFile.exists() || cacheFile.length() == 0L
 
             if (shouldUpdateCache) {
-                val response = ApiService.create().getAllFeatures(tableName)
-                if (response.isSuccessful) {
-                    val geoJsonData = response.body()
-                    if (geoJsonData != null && geoJsonData.features.isNotEmpty()) {
-                        val geoJsonString = Gson().toJson(geoJsonData)
-                        if (isValidGeoJson(geoJsonString)) {
-                            MapUtils.writeGeoJsonToCache(geoJsonCacheDir, cacheFileName, geoJsonString)
-                            Log.d("MapActivity", "Cache updated for $tableName.")
+                // Tampilkan loading sebelum memulai fetch
+                withContext(Dispatchers.Main) {
+                    showLoading(true)
+                }
+
+                try {
+                    val response = ApiService.create().getAllFeatures(tableName)
+                    if (response.isSuccessful) {
+                        val geoJsonData = response.body()
+                        if (geoJsonData != null && geoJsonData.features.isNotEmpty()) {
+                            val geoJsonString = Gson().toJson(geoJsonData)
+                            if (isValidGeoJson(geoJsonString)) {
+                                MapUtils.writeGeoJsonToCache(geoJsonCacheDir, cacheFileName, geoJsonString)
+                                Log.d("MapActivity", "Cache updated for $tableName.")
+
+                                // Tambahkan ulang GeoJSON ke peta
+                                reloadGeoJsonLayer(tableName, geoJsonString)
+                            } else {
+                                Log.e("MapActivity", "Invalid GeoJSON received for $tableName.")
+                            }
                         } else {
-                            Log.e("MapActivity", "Invalid GeoJSON received for $tableName.")
+                            Log.e("MapActivity", "No features found in GeoJSON response for $tableName.")
                         }
                     } else {
-                        Log.e("MapActivity", "No features found in GeoJSON response for $tableName.")
+                        Log.e("MapActivity", "Failed to fetch GeoJSON for $tableName: ${response.errorBody()?.string()}")
                     }
-                } else {
-                    Log.e("MapActivity", "Failed to fetch GeoJSON for $tableName: ${response.errorBody()?.string()}")
+                } catch (e: Exception) {
+                    Log.e("MapActivity", "Error fetching GeoJSON for $tableName: ${e.message}", e)
+                } finally {
+                    // Sembunyikan loading setelah selesai
+                    withContext(Dispatchers.Main) {
+                        showLoading(false)
+                    }
                 }
             } else {
                 Log.d("MapActivity", "Cache is up-to-date for $tableName.")
+
+                // Jika tidak perlu diperbarui, tambahkan ulang data dari cache
+                val cachedGeoJson = MapUtils.readGeoJsonFromCache(geoJsonCacheDir, cacheFileName)
+                if (!cachedGeoJson.isNullOrEmpty()) {
+                    reloadGeoJsonLayer(tableName, cachedGeoJson)
+                }
             }
+        }
+    }
+
+    // Fungsi untuk memuat ulang layer GeoJSON
+    private fun reloadGeoJsonLayer(tableName: String, geoJsonString: String) {
+        val mapboxMap = binding.mapView.mapboxMap
+
+        try {
+            val featureCollection = FeatureCollection.fromJson(geoJsonString)
+
+            mapboxMap.getStyle { style ->
+                val sourceId = "source-$tableName"
+                val layerId = "layer-$tableName"
+
+                if (style.styleSourceExists(sourceId)) {
+                    // Perbarui source yang ada dengan GeoJSON baru
+                    val existingSource = style.getSourceAs<GeoJsonSource>(sourceId)
+                    existingSource?.featureCollection(featureCollection)
+                    Log.d("MapActivity", "Source $sourceId updated.")
+                } else {
+                    // Tambahkan source baru jika belum ada
+                    style.addSource(geoJsonSource(sourceId) {
+                        featureCollection(featureCollection)
+                    })
+                    Log.d("MapActivity", "Source $sourceId added.")
+                }
+
+                // Tambahkan layer baru jika belum ada
+                if (!style.styleLayerExists(layerId)) {
+                    val layer = when (tableName) {
+                        "PolaRuang" -> fillLayer(layerId, sourceId) {
+                            fillColor(getPolaRuangColorExpression())
+                            fillOpacity(1.0)
+                        }
+                        else -> fillLayer(layerId, sourceId) {
+                            fillOutlineColor(Color.BLACK)
+                            fillOpacity(1.0)
+                            fillColor(Color.TRANSPARENT)
+                        }
+                    }
+                    style.addLayer(layer)
+                    Log.d("MapActivity", "Layer $layerId added.")
+                } else {
+                    Log.d("MapActivity", "Layer $layerId already exists.")
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("MapActivity", "Error reloading GeoJSON layer for $tableName: ${e.message}")
         }
     }
 
@@ -921,6 +1154,14 @@ class MapActivity : ComponentActivity() {
         for ((tableName, config) in layersConfig) {
             val sourceId = "source-$tableName"
             val layerId = "layer-$tableName"
+
+            // Pastikan source untuk GeoJSON ada sebelum menambahkan layer
+            if (!style.styleSourceExists(sourceId)) {
+                Log.e("MapActivity", "Source $sourceId not found for $tableName. Adding placeholder.")
+                style.addSource(geoJsonSource(sourceId) {
+                    featureCollection(FeatureCollection.fromFeatures(emptyList())) // Placeholder
+                })
+            }
 
             if (!style.styleLayerExists(layerId)) {
                 val layer = when (tableName) {
@@ -961,6 +1202,8 @@ class MapActivity : ComponentActivity() {
 
         // Tambahkan lapisan pengukuran di atas blue dot
         setupMeasurementLayers(style)
+
+        Log.d("MapActivity", "All layers added to map successfully.")
     }
 
     private fun getPolaRuangColorExpression(): Expression {
@@ -995,26 +1238,46 @@ class MapActivity : ComponentActivity() {
         try {
             val featureCollection = FeatureCollection.fromJson(geoJsonString)
 
-            if (featureCollection.features().isNullOrEmpty()) {
-                Log.e("MapActivity", "GeoJSON for $tableName has no valid features.")
-                return
-            }
-
             mapboxMap.getStyle { style ->
                 val sourceId = "source-$tableName"
+                val layerId = "layer-$tableName"
 
-                // Hapus sumber lama jika ada
                 if (style.styleSourceExists(sourceId)) {
-                    style.removeStyleSource(sourceId)
+                    // Jika sumber sudah ada, perbarui fitur di dalamnya
+                    val existingSource = style.getSourceAs<GeoJsonSource>(sourceId)
+                    existingSource?.featureCollection(featureCollection)
+                    Log.d("MapActivity", "Source $sourceId updated successfully.")
+                } else {
+                    // Jika sumber belum ada, tambahkan
+                    style.addSource(geoJsonSource(sourceId) {
+                        featureCollection(featureCollection)
+                    })
+                    Log.d("MapActivity", "Source $sourceId added successfully.")
                 }
 
-                style.addSource(geoJsonSource(sourceId) {
-                    featureCollection(featureCollection)
-                })
-                Log.d("MapActivity", "Source $sourceId added.")
+                // Periksa apakah layer sudah ada
+                if (!style.styleLayerExists(layerId)) {
+                    val layer = when (tableName) {
+                        "PolaRuang" -> fillLayer(layerId, sourceId) {
+                            fillColor(getPolaRuangColorExpression())
+                            fillOpacity(1.0)
+                        }
+                        else -> fillLayer(layerId, sourceId) {
+                            fillOutlineColor(Color.BLACK)
+                            fillOpacity(1.0)
+                            fillColor(Color.TRANSPARENT)
+                        }
+                    }
+
+                    // Tambahkan layer ke style
+                    style.addLayer(layer)
+                    Log.d("MapActivity", "Layer $layerId added successfully.")
+                } else {
+                    Log.d("MapActivity", "Layer $layerId already exists.")
+                }
             }
         } catch (e: Exception) {
-            Log.e("MapActivity", "Failed to load GeoJSON for $tableName: ${e.message}")
+            Log.e("MapActivity", "Error loading GeoJSON for $tableName: ${e.message}")
         }
     }
 
@@ -1346,7 +1609,7 @@ class MapActivity : ComponentActivity() {
         if (checkLocationPermission()) {
             locationUpdatesInProgress = true
             updateGeolocationState()
-            Toast.makeText(this, "Updating location...", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Memperbarui lokasi...", Toast.LENGTH_SHORT).show()
 
             // Get the user's location and display it on the map
             updateUserLocationOnMap()
@@ -1386,7 +1649,7 @@ class MapActivity : ComponentActivity() {
                 // Permission denied
                 Toast.makeText(
                     this,
-                    "Location permission is required to access your location.",
+                    "Izin lokasi diperlukan untuk mengakses lokasi Anda.",
                     Toast.LENGTH_SHORT
                 ).show()
             }
@@ -1397,7 +1660,7 @@ class MapActivity : ComponentActivity() {
     private fun stopLocationUpdates() {
         locationUpdatesInProgress = false
         updateGeolocationState()
-        Toast.makeText(this, "Location update process completed.", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "Proses pembaruan lokasi selesai.", Toast.LENGTH_SHORT).show()
     }
 
     // Register a BroadcastReceiver to listen for GPS status changes
@@ -1429,7 +1692,7 @@ class MapActivity : ComponentActivity() {
 
         task.addOnSuccessListener {
             // GPS sudah aktif
-            Toast.makeText(this, "GPS is already enabled.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "GPS sudah diaktifkan.", Toast.LENGTH_SHORT).show()
         }
 
         task.addOnFailureListener { exception ->
@@ -1522,11 +1785,11 @@ class MapActivity : ComponentActivity() {
         if (requestCode == REQUEST_ENABLE_GPS) {
             if (resultCode == RESULT_OK) {
                 // GPS berhasil diaktifkan
-                Toast.makeText(this, "GPS enabled successfully!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "GPS berhasil diaktifkan!", Toast.LENGTH_SHORT).show()
                 updateGeolocationState()
             } else {
                 // Pengguna menolak mengaktifkan GPS
-                Toast.makeText(this, "GPS not enabled. Please enable GPS for full functionality.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "GPS tidak diaktifkan. Aktifkan GPS untuk fungsionalitas penuh.", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -1539,6 +1802,9 @@ class MapActivity : ComponentActivity() {
             try {
                 // Tambahkan ikon blue dot
                 addIconsToStyle(style)
+
+
+                initializeMapLayers()
 
                 // Tambahkan blue dot jika ada lokasi terakhir
                 lastClickedPoint?.let { point ->
@@ -1563,7 +1829,7 @@ class MapActivity : ComponentActivity() {
                 Log.e("MapActivity", "Failed to add blue dot icon: ${e.message}")
                 Log.e("MapActivity", "Failed to add icons: ${e.message}")
                 Log.e("MapActivity", "Error adding layers: ${e.message}")
-                Toast.makeText(this, "Failed to load icons and layers", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Gagal memuat ikon dan layer.", Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -1844,6 +2110,28 @@ class MapActivity : ComponentActivity() {
         fun updateData(newResults: List<SearchResult>) {
             results = newResults
             notifyDataSetChanged()
+        }
+    }
+
+    private fun initializeMapLayers() {
+        showLoading(true)
+        val mapboxMap = binding.mapView.mapboxMap
+
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                mapboxMap.getStyle { style ->
+                    ensureGeoJsonCacheUpdated("BatasAdministrasi")
+                    ensureGeoJsonCacheUpdated("BidangTanah")
+                    ensureGeoJsonCacheUpdated("PolaRuang")
+
+                    reloadActiveLayers()
+                }
+            } finally {
+                // Sembunyikan loading
+                withContext(Dispatchers.Main) {
+                    showLoading(false)
+                }
+            }
         }
     }
 
