@@ -21,7 +21,7 @@ app.get('/', (req, res) => {
 // PostgreSQL connection configuration
 const pool = new Pool({
   user: 'postgres',
-  host: '/cloudsql/terrasync-441508:asia-southeast2:terrasync-db',
+  host: '34.34.216.100',
   database: 'data',
   password: 'Terrasync@157',
   port: 5432,
