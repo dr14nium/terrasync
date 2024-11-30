@@ -13,11 +13,10 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-/*// PostgreSQL Welcome
+// PostgreSQL Welcome
 app.get('/', (req, res) => {
-  res.send('Welcome to the Terrasync Server API!');
+  res.send('Terrasync Server API');
 });
-*/
 
 // PostgreSQL connection configuration
 const pool = new Pool({
