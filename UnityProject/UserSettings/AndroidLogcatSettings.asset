@@ -1,12 +1,12 @@
 {
-    "m_SelectedDeviceId": "192.168.1.9:55555",
+    "m_SelectedDeviceId": "192.168.1.6:37925",
     "m_SelectedPackage": {
-        "deviceId": "192.168.1.9:55555",
-        "name": "com.geoclarity.ar",
-        "processId": 25842,
+        "deviceId": "192.168.1.6:37925",
+        "name": "com.drianium.terrasync.ar",
+        "processId": 28525,
         "exited": false
     },
-    "m_SelectedPriority": 0,
+    "m_SelectedPriority": 4,
     "m_KnownPackagesForSerialization": [
         {
             "deviceId": "192.168.1.11:55555",
@@ -117,9 +117,171 @@
             "exited": false
         },
         {
+            "deviceId": "fc1ac038",
+            "name": "com.geoclarity.ar",
+            "processId": 9807,
+            "exited": false
+        },
+        {
+            "deviceId": "fc1ac038",
+            "name": "com.geoclarity.ar",
+            "processId": 15031,
+            "exited": false
+        },
+        {
+            "deviceId": "fc1ac038",
+            "name": "com.geoclarity.ar",
+            "processId": 29501,
+            "exited": false
+        },
+        {
             "deviceId": "192.168.1.9:55555",
             "name": "com.geoclarity.ar",
             "processId": 25842,
+            "exited": false
+        },
+        {
+            "deviceId": "192.168.1.4:40665",
+            "name": "com.geoclarity.ar",
+            "processId": 18552,
+            "exited": true
+        },
+        {
+            "deviceId": "192.168.1.4:40665",
+            "name": "com.android.launcher",
+            "processId": 4850,
+            "exited": false
+        },
+        {
+            "deviceId": "192.168.1.4:40665",
+            "name": "com.geoclarity.ar",
+            "processId": 21118,
+            "exited": false
+        },
+        {
+            "deviceId": "192.168.1.4:40665",
+            "name": "com.geoclarity.ar",
+            "processId": 24074,
+            "exited": false
+        },
+        {
+            "deviceId": "192.168.1.4:40665",
+            "name": "com.geoclarity.ar",
+            "processId": 26910,
+            "exited": false
+        },
+        {
+            "deviceId": "192.168.1.6:37925",
+            "name": "com.geoclarity.ar",
+            "processId": 14463,
+            "exited": true
+        },
+        {
+            "deviceId": "192.168.1.6:37925",
+            "name": "com.drianium.terrasync.ar",
+            "processId": 17676,
+            "exited": true
+        },
+        {
+            "deviceId": "192.168.1.6:37925",
+            "name": "com.android.launcher",
+            "processId": 4934,
+            "exited": true
+        },
+        {
+            "deviceId": "192.168.1.6:37925",
+            "name": "com.drianium.terrasync.ar",
+            "processId": 10825,
+            "exited": true
+        },
+        {
+            "deviceId": "192.168.1.6:37925",
+            "name": "com.drianium.terrasync.ar",
+            "processId": 23092,
+            "exited": false
+        },
+        {
+            "deviceId": "192.168.1.6:37925",
+            "name": "com.drianium.terrasync.ar",
+            "processId": 29689,
+            "exited": false
+        },
+        {
+            "deviceId": "192.168.1.6:37925",
+            "name": "com.drianium.terrasync.ar",
+            "processId": 30911,
+            "exited": false
+        },
+        {
+            "deviceId": "192.168.1.6:37925",
+            "name": "com.drianium.terrasync.ar",
+            "processId": 32170,
+            "exited": false
+        },
+        {
+            "deviceId": "192.168.1.6:37925",
+            "name": "com.drianium.terrasync.ar",
+            "processId": 3082,
+            "exited": false
+        },
+        {
+            "deviceId": "192.168.1.6:37925",
+            "name": "com.drianium.terrasync.ar",
+            "processId": 5920,
+            "exited": false
+        },
+        {
+            "deviceId": "192.168.1.6:37925",
+            "name": "com.drianium.terrasync.ar",
+            "processId": 8536,
+            "exited": false
+        },
+        {
+            "deviceId": "192.168.1.6:37925",
+            "name": "com.drianium.terrasync.ar",
+            "processId": 9432,
+            "exited": false
+        },
+        {
+            "deviceId": "192.168.1.6:37925",
+            "name": "com.drianium.terrasync.ar",
+            "processId": 10414,
+            "exited": false
+        },
+        {
+            "deviceId": "192.168.1.6:37925",
+            "name": "com.drianium.terrasync.ar",
+            "processId": 11674,
+            "exited": false
+        },
+        {
+            "deviceId": "192.168.1.6:37925",
+            "name": "com.drianium.terrasync.ar",
+            "processId": 18146,
+            "exited": false
+        },
+        {
+            "deviceId": "192.168.1.6:37925",
+            "name": "com.drianium.terrasync.ar",
+            "processId": 20494,
+            "exited": false
+        },
+        {
+            "deviceId": "192.168.1.6:37925",
+            "name": "com.drianium.terrasync.ar",
+            "processId": 22205,
+            "exited": false
+        },
+        {
+            "deviceId": "192.168.1.6:37925",
+            "name": "com.drianium.terrasync.ar",
+            "processId": 27207,
+            "exited": false
+        },
+        {
+            "deviceId": "192.168.1.6:37925",
+            "name": "com.drianium.terrasync.ar",
+            "processId": 28525,
             "exited": false
         }
     ],

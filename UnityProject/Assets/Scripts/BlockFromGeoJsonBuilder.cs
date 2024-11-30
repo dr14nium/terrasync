@@ -34,13 +34,22 @@ public class BlockFromGeoJsonBuilder : MonoBehaviour
     public string colorCategoryField = "category";
     public List<ObjectColor> objectColors = new List<ObjectColor>();
 
+    private string cachedGeoJsonData = null;
+    private Dictionary<string, Queue<GameObject>> objectPools = new Dictionary<string, Queue<GameObject>>();
+
     void Start()
     {
         StartCoroutine(FetchGeoJsonData());
     }
-    
+
     public IEnumerator<object> FetchGeoJsonData()
     {
+        if (!string.IsNullOrEmpty(cachedGeoJsonData))
+        {
+            GenerateObjects(cachedGeoJsonData);
+            yield break;
+        }
+
         UnityWebRequest request = UnityWebRequest.Get(apiUrl);
         yield return request.SendWebRequest();
 
@@ -50,8 +59,8 @@ public class BlockFromGeoJsonBuilder : MonoBehaviour
         }
         else
         {
-            string json = request.downloadHandler.text;
-            GenerateObjects(json);
+            cachedGeoJsonData = request.downloadHandler.text;
+            GenerateObjects(cachedGeoJsonData);
         }
     }
 
@@ -94,166 +103,79 @@ public class BlockFromGeoJsonBuilder : MonoBehaviour
     private void CreateObject(Polygon geometry, Feature feature, int featureIndex, int polygonIndex)
     {
         string objectName = $"{objectNamePrefix}_{featureIndex}_{polygonIndex}";
-        GameObject obj = new GameObject(objectName);
-        obj.transform.SetParent(this.transform, false);
+        GameObject obj = GetFromPool(objectName);
 
-        Color wireframeColorToUse = wireframeColor;
-        if (createWireframe && useMultipleColors)
+        if (obj == null)
         {
-            string categoryValue = feature.Properties.ContainsKey(colorCategoryField) ? feature.Properties[colorCategoryField].ToString() : null;
-            if (!string.IsNullOrEmpty(categoryValue))
+            obj = new GameObject(objectName);
+            obj.transform.SetParent(this.transform, false);
+
+            var blockBuilder = obj.AddComponent<BlockFromPolygonBuilder>();
+            blockBuilder.Initialize(
+                geometry,
+                feature.Properties,
+                worldPositionAnchor,
+                create3DModel ? heightField : "",
+                createWireframe,
+                wireframeColor,
+                useUniformHeight,
+                uniformHeight,
+                create2DModel);
+
+            blockBuilder.wireframeThickness = this.wireframeThickness;
+            blockBuilder.Draw(createFullMesh);
+
+            if (createFullMesh)
             {
-                var matchingColor = objectColors.FirstOrDefault(c => c.objectCategory == categoryValue)?.color;
-                if (matchingColor.HasValue)
+                MeshRenderer meshRenderer = obj.AddComponent<MeshRenderer>();
+                if (useMultipleMaterials)
                 {
-                    wireframeColorToUse = matchingColor.Value;
-                    Debug.Log($"Assigned color for {objectName} with category: {categoryValue}");
-                }
-                else
-                {
-                    Debug.LogWarning($"No matching color found for category: {categoryValue}. Object: {objectName} will use default color.");
-                }
-            }
-        }
-
-        var blockBuilder = obj.AddComponent<BlockFromPolygonBuilder>();
-        blockBuilder.Initialize(
-            geometry, 
-            feature.Properties, 
-            worldPositionAnchor, 
-            create3DModel ? heightField : "", 
-            createWireframe, 
-            wireframeColorToUse, 
-            useUniformHeight,   
-            uniformHeight,
-            create2DModel);
-        blockBuilder.wireframeThickness = this.wireframeThickness; 
-        blockBuilder.Draw(createFullMesh);
-
-        if (createFullMesh)
-        {
-            MeshRenderer meshRenderer = obj.GetComponent<MeshRenderer>() ?? obj.AddComponent<MeshRenderer>();
-            MeshFilter meshFilter = obj.GetComponent<MeshFilter>() ?? obj.AddComponent<MeshFilter>();
-
-            if (useMultipleMaterials)
-            {
-                string categoryValue = feature.Properties.ContainsKey(objectCategoryField) ? feature.Properties[objectCategoryField].ToString() : null;
-                if (!string.IsNullOrEmpty(categoryValue))
-                {
+                    var categoryValue = feature.Properties.ContainsKey(objectCategoryField)
+                        ? feature.Properties[objectCategoryField].ToString()
+                        : null;
                     var matchingMaterial = objectMaterials.FirstOrDefault(m => m.objectCategory == categoryValue)?.material;
-                    if (matchingMaterial != null)
-                    {
-                        meshRenderer.material = matchingMaterial;
-                        Debug.Log($"Assigned material for {objectName} with category: {categoryValue}");
-                    }
-                    else
-                    {
-                        Debug.LogWarning($"No matching material found for category: {categoryValue}. Object: {objectName} will have no material assigned.");
-                    }
+                    meshRenderer.material = matchingMaterial ?? singleMaterial;
                 }
                 else
                 {
-                    Debug.LogWarning($"Category field is missing or empty for feature {featureIndex}. Object: {objectName} will have no material assigned.");
+                    meshRenderer.material = singleMaterial;
                 }
-            }
-            else if (singleMaterial != null)
-            {
-                meshRenderer.material = singleMaterial;
-                Debug.Log($"Assigned single material for {objectName}");
-            }
-            else
-            {
-                Debug.LogWarning($"No material assigned for {objectName}");
-            }
 
-            CreateIntegratedMeshCollider(obj);
-            
-            var featureAttributes = ScriptableObject.CreateInstance<FeatureAttributes>();
-            featureAttributes.Initialize(new Dictionary<string, object>(feature.Properties));
-
-            var featureAttributesHolder = obj.AddComponent<FeatureAttributesHolder>();
-            featureAttributesHolder.featureAttributes = featureAttributes;
-
-            var objectInteraction = obj.AddComponent<ObjectInteraction>();
-            objectInteraction.featureAttributes = featureAttributes;
-        }
-        else if (createWireframe)
-        {
-            CreateSeparateMeshCollider(obj, geometry, feature.Properties, create3DModel ? heightField : "");
+                var meshCollider = obj.AddComponent<MeshCollider>();
+                meshCollider.convex = false;
+            }
         }
 
-        Debug.Log($"Created object: {objectName}");
+        obj.SetActive(true);
+        Debug.Log($"Created or reused object: {objectName}");
     }
 
-    private void CreateSeparateMeshCollider(GameObject parentObject, Polygon geometry, IDictionary<string, object> properties, string heightField)
+    private GameObject GetFromPool(string objectName)
     {
-        // Create a child object for the collider
-        GameObject colliderObject = new GameObject("ColliderMesh");
-        colliderObject.transform.SetParent(parentObject.transform, false);
-
-        // Initialize BlockFromPolygonBuilder on the child object
-        var blockBuilder = colliderObject.AddComponent<BlockFromPolygonBuilder>();
-        blockBuilder.Initialize(
-            geometry, 
-            properties, 
-            worldPositionAnchor, 
-            heightField, 
-            false, 
-            Color.clear, 
-            useUniformHeight,   
-            uniformHeight,
-            create2DModel);
-        blockBuilder.Draw(true);
-
-        // Ensure MeshCollider is only added once
-        if (colliderObject.GetComponent<MeshCollider>() == null)
+        if (objectPools.TryGetValue(objectName, out var pool) && pool.Count > 0)
         {
-            var meshCollider = colliderObject.AddComponent<MeshCollider>();
-            meshCollider.convex = false;
+            return pool.Dequeue();
         }
-
-        MeshRenderer renderer = colliderObject.GetComponent<MeshRenderer>();
-        if (renderer != null)
-        {
-            renderer.enabled = false; // Collider is invisible
-        }
-
-        // Add FeatureAttributesHolder and ObjectInteraction to the child object
-        var featureAttributes = ScriptableObject.CreateInstance<FeatureAttributes>();
-        featureAttributes.Initialize(new Dictionary<string, object>(properties));
-
-        var featureAttributesHolder = colliderObject.AddComponent<FeatureAttributesHolder>();
-        featureAttributesHolder.featureAttributes = featureAttributes;
-
-        var objectInteraction = colliderObject.AddComponent<ObjectInteraction>();
-        objectInteraction.featureAttributes = featureAttributes;
-
-        Debug.Log($"ColliderMesh created and components added on: {colliderObject.name}");
+        return null;
     }
 
-    private void CreateIntegratedMeshCollider(GameObject obj)
+    private void ReturnToPool(string objectName, GameObject obj)
     {
-        if (obj.GetComponent<MeshCollider>() == null)
+        if (!objectPools.ContainsKey(objectName))
         {
-            var meshCollider = obj.AddComponent<MeshCollider>();
-            meshCollider.convex = false;
+            objectPools[objectName] = new Queue<GameObject>();
         }
+
+        obj.SetActive(false);
+        objectPools[objectName].Enqueue(obj);
     }
 
     public void ClearObjects()
     {
-        List<GameObject> children = new List<GameObject>();
-
         foreach (Transform child in transform)
         {
-            children.Add(child.gameObject);
+            ReturnToPool(child.name, child.gameObject);
         }
-
-        foreach (GameObject child in children)
-        {
-            DestroyImmediate(child);
-        }
-
         Debug.Log("All generated objects cleared.");
     }
 }

@@ -16,11 +16,9 @@ public class ObjectInfoManager : MonoBehaviour
 
     [Header("UI Elements")]
     public GameObject ObjectInformationPanel;  // Panel yang menampung semua informasi objek
-    public GameObject ReportFormPanel;         // Panel untuk form report
     public Transform ContentParent;            // Tempat RowPrefab menjadi child
     public GameObject RowPrefab;               // Prefab baris yang berisi 3 teks (Label, :, Value)
     public Button CloseButton;
-    public Button ReportButton;                // Tombol Report
 
     private int currentObjectID;               // ID dari object yang aktif
 
@@ -39,13 +37,11 @@ public class ObjectInfoManager : MonoBehaviour
     private void OnEnable()
     {
         CloseButton.onClick.AddListener(HideObjectInformation);
-        ReportButton.onClick.AddListener(ShowReportForm); // Tambahkan listener untuk tombol report
     }
 
     private void OnDisable()
     {
         CloseButton.onClick.RemoveListener(HideObjectInformation);
-        ReportButton.onClick.RemoveListener(ShowReportForm); // Hapus listener saat disable
     }
 
     // Fungsi untuk menampilkan informasi objek berdasarkan KeyInfo yang sesuai dengan prefab yang aktif
@@ -123,19 +119,6 @@ public class ObjectInfoManager : MonoBehaviour
         if (ObjectInformationPanel != null)
         {
             ObjectInformationPanel.SetActive(false);
-        }
-    }
-
-    // Fungsi untuk menampilkan ReportForm dan mengisi ObjectID di form report
-    public void ShowReportForm()
-    {
-        if (ObjectInformationPanel != null && ReportFormPanel != null)
-        {
-            // Kirim objectID ke ReportFormManager sebelum menampilkan form
-            ReportFormManager.Instance.SetObjectID(currentObjectID.ToString());
-
-            ObjectInformationPanel.SetActive(false); // Sembunyikan panel informasi objek
-            ReportFormPanel.SetActive(true);         // Tampilkan panel report form
         }
     }
 }

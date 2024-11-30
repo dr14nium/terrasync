@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Linq; // Tambahkan ini
 
 [System.Serializable]
 public class PrefabKeyInfo
@@ -163,30 +164,21 @@ public class LayerManager : MonoBehaviour
     // Activate a prefab by name
     public void ActivatePrefab(string prefabName)
     {
-        string cleanPrefabName = prefabName.Replace("(Clone)", "").Trim();
-        GameObject prefab = ObjectPrefabs.Find(p => p.name == cleanPrefabName);
+        var prefab = ObjectPrefabs.FirstOrDefault(p => p.name == prefabName);
+        if (prefab == null) return;
 
-        if (prefab != null && ARManager.Instance._currentAnchor != null)
+        if (CurrentActiveObject != null)
         {
-            if (_currentActiveObject != null)
+            // Return to pool
+            var blockBuilder = CurrentActiveObject.GetComponent<BlockFromGeoJsonBuilder>();
+            if (blockBuilder != null)
             {
-                Destroy(_currentActiveObject);  // Destroy the previously active object
+                blockBuilder.ClearObjects();
             }
-
-            GameObject newObject = Instantiate(prefab, ARManager.Instance._currentAnchor.transform.position, ARManager.Instance._currentAnchor.transform.rotation);
-            newObject.transform.localScale = Vector3.one;
-
-            CurrentActiveObject = newObject;
-            ARManager.Instance.CurrentActiveObject = newObject;
-
-            ShowOutlineSelectionBox(newObject);
-
-            SnackBarManager.Instance.ShowSnackBar($"Prefab '{cleanPrefabName}' instantiated.", true);
         }
-        else
-        {
-            SnackBarManager.Instance.ShowSnackBar($"Prefab '{cleanPrefabName}' not found or anchor not created.", true);
-        }
+
+        CurrentActiveObject = Instantiate(prefab, transform);
+        Debug.Log($"Prefab {prefabName} activated.");
     }
 
     // Show the outline selection box for the active object
