@@ -20,10 +20,10 @@ app.get('/', (req, res) => {
 
 // PostgreSQL connection configuration
 const pool = new Pool({
-  user: process.env.DB_USER,
-  host: process.env.DB_HOST,
-  database: process.env.DB_NAME,
-  password: process.env.DB_PASSWORD,
+  user: 'postgres',
+  host: '34.34.216.100',
+  database: 'data',
+  password: 'Terrasync@157',
   port: 5432,
 });
 
